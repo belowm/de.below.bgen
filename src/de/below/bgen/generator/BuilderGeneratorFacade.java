@@ -1,5 +1,6 @@
 package de.below.bgen.generator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -120,7 +121,7 @@ public class BuilderGeneratorFacade {
 		BuilderGenerator generator = new BuilderGenerator(progressMonitor, setterGenerator,
 				fieldGenerationStrategy, setterNamingStrategy, targetTypeCreationStrategy, instantiationStrategy);
 
-		generator.generate(type, setterProperties, builderName);
+		generator.generate(type, setterProperties, new ArrayList<String>(), builderName);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package de.below.bgen.generator.components;
 
+import org.eclipse.jdt.core.IType;
+
 /**
  * Methods for generating "setter" methods.
  * 
@@ -19,7 +21,7 @@ public abstract class SetterGenerationStrategy {
 
 		@Override
 		public String renderSetterCode(SetterNamingStrategy namingStrategy,
-				String builderName, String paramName, String paramType) {
+				IType returnType, String paramName, String paramType) {
 
 			return String.format(STANDARD_SETTER,
 					namingStrategy.renderSetterNameFor(paramName), paramType,
@@ -36,9 +38,9 @@ public abstract class SetterGenerationStrategy {
 
 		@Override
 		public String renderSetterCode(SetterNamingStrategy namingStrategy,
-				String builderName, String paramName, String paramType) {
+				IType returnType, String paramName, String paramType) {
 
-			return String.format(FLUENT_SETTER, builderName,
+			return String.format(FLUENT_SETTER, returnType.getElementName(),
 					namingStrategy.renderSetterNameFor(paramName), paramType,
 					paramName);
 		}
@@ -51,7 +53,7 @@ public abstract class SetterGenerationStrategy {
 	 * 
 	 * @param namingStrategy
 	 *            Strategy to render the method name.
-	 * @param builderName
+	 * @param returnTypeName
 	 *            The name of the builder class.
 	 * @param propertyName
 	 *            The name of the property.
@@ -59,7 +61,7 @@ public abstract class SetterGenerationStrategy {
 	 *            The type of the property.
 	 */
 	public abstract String renderSetterCode(
-			SetterNamingStrategy namingStrategy, String builderName,
+			SetterNamingStrategy namingStrategy, IType returnType,
 			String propertyName, String propertyType);
 
 }

@@ -4,14 +4,16 @@ import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 
+import de.below.bgen.TestUtils;
+
 
 public class SetterGenerationStrategyTest {
 
 	@Test
 	public void testJavaBeanSetter() {
-		
+
 		String setterCode = SetterGenerationStrategy.JAVA_BEAN.renderSetterCode(
-				SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING, "PersonBuilder",
+				SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING, TestUtils.createMockType("PersonBuilder", true),
 				"age", "Date");
 		
 		assertEquals("setter code", "public void setAge(Date value) {\n" + 
@@ -24,7 +26,7 @@ public class SetterGenerationStrategyTest {
 	public void testFluentSetter() {
 		
 		String setterCode = SetterGenerationStrategy.FLUENT.renderSetterCode(
-				SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING, "PersonBuilder",
+				SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING, TestUtils.createMockType("PersonBuilder", true),
 				"age", "Date");
 		
 		assertEquals("setter code", "public PersonBuilder setAge(Date value) {\n" + 

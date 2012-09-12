@@ -1,5 +1,6 @@
 package de.below.bgen.generator.components;
 
+import static de.below.bgen.TestUtils.createMockType;
 import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -10,15 +11,12 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.junit.Test;
 
-
 public class InstantiationStrategyTest {
 
 	@Test
 	public void renderImplicitDefaultConstructorCall() throws JavaModelException {
 		
-		IType type = createMockType();
-
-		replay(type);
+		IType type = createMockType("Person", true);
 
 		String instantiation = InstantiationStrategy.implicitDefaultConstructorCall(type).renderInstantiation();
 		
@@ -30,7 +28,7 @@ public class InstantiationStrategyTest {
 	@Test
 	public void renderConstructorCallWithNoArgument() throws JavaModelException {
 		
-		IType type = createMockType();
+		IType type = createMockType("Person", false);
 		IMethod method = createMock(IMethod.class);
 		
 		expect(method.getParameterNames()).andStubReturn(new String[] { } );
@@ -49,7 +47,7 @@ public class InstantiationStrategyTest {
 	@Test
 	public void renderConstructorCallWithOneArgument() throws JavaModelException {
 		
-		IType type = createMockType();
+		IType type = createMockType("Person", false);
 		IMethod method = createMock(IMethod.class);
 		
 		expect(method.getParameterNames()).andStubReturn(new String[] { "foo" } );
@@ -67,7 +65,7 @@ public class InstantiationStrategyTest {
 	@Test
 	public void renderConstructorCallWithTwoArguments() throws JavaModelException {
 		
-		IType type = createMockType();
+		IType type = createMockType("Person", false);
 		
 		IMethod method = createMock(IMethod.class);
 		
@@ -86,7 +84,7 @@ public class InstantiationStrategyTest {
 	@Test
 	public void renderFactoryMethodCallWithNoArgument() throws JavaModelException {
 		
-		IType type = createMockType();
+		IType type = createMockType("Person", false);
 		IMethod method = createMock(IMethod.class);
 		
 		expect(method.getElementName()).andStubReturn("newInstance");
@@ -105,7 +103,7 @@ public class InstantiationStrategyTest {
 	@Test
 	public void renderFactoryMethodCallWithTwoArguments() throws JavaModelException {
 		
-		IType type = createMockType();
+		IType type = createMockType("Person", false);
 		IMethod method = createMock(IMethod.class);
 		
 		expect(method.getElementName()).andStubReturn("newInstance");
@@ -120,13 +118,5 @@ public class InstantiationStrategyTest {
 		assertEquals("factory-method call", "Person.newInstance(hans, peter)", instantiation);
 		
 	}
-
-	private IType createMockType() {
-		IType type = createMock(IType.class);
-		expect(type.getElementName()).andReturn("Person");
-		return type;
-	}
-	
-	
 	
 }

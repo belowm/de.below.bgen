@@ -30,9 +30,13 @@ public class BuilderGenerator {
 
 	private final IProgressMonitor progressMonitor;
 
-	public BuilderGenerator(IProgressMonitor pm, SetterGenerationStrategy setterGenerator,
+	public BuilderGenerator(IProgressMonitor pm,
+			SetterGenerationStrategy setterGenerator,
 			FieldGenerationStrategy fieldGenerator,
-			SetterNamingStrategy setterNaming, TargetTypeCreationStrategy target, InstantiationStrategy instantiationStrategy) {
+			SetterNamingStrategy setterNaming,
+			TargetTypeCreationStrategy target,
+			InstantiationStrategy instantiationStrategy) {
+		
 		this.progressMonitor = pm;
 		this.setterGenerator = setterGenerator;
 		this.fieldGenerator = fieldGenerator;
@@ -50,7 +54,9 @@ public class BuilderGenerator {
 	 * @param targetCompilationUnit
 	 * @throws JavaModelException
 	 */
-	public void generate(IType sourceType, List<IMethod> setterMethods,
+	public void generate(IType sourceType, 
+			List<IMethod> setterMethods, 
+			List<String> mandatoryProperties,
 			String builderName)
 			throws JavaModelException {
 
@@ -63,15 +69,11 @@ public class BuilderGenerator {
 		IType builderType = target.createBuilderType(progressMonitor, sourceType, builderName);
 
 		createFactoryMethod(sourceType, builderType);
-		
-		createSettersAndFields(instantiationStrategy.getMethod(), builderType, builderName);
-		
-		createSettersAndFieldsFromSetterMethods(setterMethods, builderType, builderName);
-		
+		createSettersAndFields(instantiationStrategy.getMethod(), builderType);
+		createSettersAndFieldsFromSetterMethods(setterMethods, builderType);
 		createBuildMethod(sourceType, instantiationStrategy.getMethod(), builderType);
-
 		createBuildUponMethod(sourceType, builderType);
-		
+
 		
 		format(builderType);
 		
@@ -134,7 +136,7 @@ public class BuilderGenerator {
 		return builderType;
 	}
 
-	public void createSettersAndFields(IMethod method, IType builderType, String builderName)
+	private void createSettersAndFields(IMethod method, IType builderType)
 			throws JavaModelException {
 
 		if (method == null)
@@ -146,8 +148,7 @@ public class BuilderGenerator {
 			String paramType = Signature.toString(method
 					.getParameterTypes()[i]);
 
-			createSetterAndField(builderType, builderName,
-					paramName, paramType);
+			createSetterAndField(builderType, paramName, paramType);
 
 		}
 
@@ -155,11 +156,11 @@ public class BuilderGenerator {
 	
 	
 	private void createSettersAndFieldsFromSetterMethods(
-			List<IMethod> setterMethods, IType builderType, String builderName) throws JavaModelException {
+			List<IMethod> setterMethods, IType builderType) throws JavaModelException {
 
 		for (IMethod setter : setterMethods) {
 			
-			createSetterAndField(builderType, builderName,
+			createSetterAndField(builderType,
 					getPropertyNameFromSetter(setter),
 					Signature.toString(setter.getParameterTypes()[0]));
 			
@@ -167,30 +168,16 @@ public class BuilderGenerator {
 		
 	}
 
-	public void createSettersAndFieldsFromConstructor(IMethod constructor, IType type, String builderName)
-			throws JavaModelException {
-
-		for (int i = 0; i < constructor.getParameterNames().length; i++) {
-
-			String paramName = constructor.getParameterNames()[i];
-			String paramType = Signature.toString(constructor
-					.getParameterTypes()[i]);
-
-			createSetterAndField(type, builderName, paramName, paramType);
-
-		}
-	}
-
-	private void createSetterAndField(IType type, String builderName,
+	private void createSetterAndField(IType builderType,
 			String paramName, String paramType) throws JavaModelException {
-		type.createField(
+		builderType.createField(
 				fieldGenerator.renderFieldCode(paramName, paramType), null,
 				true, progressMonitor);
 
 		String setterCode = setterGenerator.renderSetterCode(setterNaming,
-				builderName, paramName, paramType);
+				builderType, paramName, paramType);
 		System.out.println(setterCode);
-		type.createMethod(setterCode, null, true, progressMonitor);
+		builderType.createMethod(setterCode, null, true, progressMonitor);
 	}
 
 	private IMethod createBuildMethod(IType sourceType, IMethod constructor,

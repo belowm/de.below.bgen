@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="bgen.CompilationUnitEditorContext"
+            targetID="#CompilationUnitEditorContext">
+         <action
+               class="de.below.bgen.actions.GenerateBuilderFromEditorAction"
+               definitionId="de.below.bgen.commands.generateBuilder"
+               id="de.below.bgen.GenerateBuilderAction"
+               label="Generate &amp;Builder..."
+				retarget="true"
+               menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
+         </action>
+      </viewerContribution>
+      <objectContribution
+            adaptable="false"
+            id="de.below.bgen.ICompilationUnit.contribs"
+            objectClass="org.eclipse.jdt.core.ICompilationUnit">
+         <action
+               class="de.below.bgen.actions.GenerateBuilderFromSelection"
+               definitionId="de.below.bgen.commands.generateBuilder"
+               id="de.below.bgen.GenerateBuilderAction"
+               label="Generate &amp;Builder..."
+               retarget="true"
+               menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
+         </action>
+      </objectContribution>
+	</extension>
+   <extension
+         point="org.eclipse.ui.commands">
+         
+      <command
+            name="Generate Builder..."
+            description="Generates a builder for a given type"
+            categoryId="org.eclipse.jdt.ui.category.source"
+            id="de.below.bgen.commands.generateBuilder">
+      </command>
+         
+   </extension>
+</plugin>

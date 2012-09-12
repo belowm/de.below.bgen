@@ -121,15 +121,17 @@ public class BuilderGenerator {
 			
 		}
 		
-		
-		
 	}
 
 	private IType getStaticMethodHome(IType sourceType, IType builderType) {
-		IType methodHome = sourceType.getCompilationUnit().equals(
-				builderType.getCompilationUnit()) ? sourceType
-				: builderType;
-		return methodHome;
+		
+		if (sourceType.getCompilationUnit() != null) {
+			if (sourceType.getCompilationUnit().equals(
+					builderType.getCompilationUnit()))
+				return sourceType;
+		}
+		
+		return builderType;
 	}
 
 	public void createSettersAndFields(IMethod method, IType builderType, String builderName)
@@ -239,7 +241,7 @@ public class BuilderGenerator {
 		
 		for (IMethod method : setterMethods) {
 			
-			setterCalls.append("\n\t").append(method.getElementName())
+			setterCalls.append("\n\tresult.").append(method.getElementName())
 					.append("(")
 					.append(getPropertyNameFromSetter(method))
 					.append(");");

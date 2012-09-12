@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bgen
 Bundle-SymbolicName: de.below.bgen;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.0
 Bundle-Activator: de.below.bgen.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

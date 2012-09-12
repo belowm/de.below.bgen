@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.jdt.internal.ui.dialogs.FilteredTypesSelectionDialog;
 import org.eclipse.jdt.ui.JavaElementLabelProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
@@ -25,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -460,7 +462,8 @@ public class NewBuilderWizard extends SimpleWizard {
 			for (IMethod method : type.getMethods()) {
 				
 				String methodName = method.getElementName();
-				if (methodName.startsWith("set") && methodName.length() > 3) {
+				
+				if (isVisible(method) && methodName.startsWith("set") && methodName.length() > 3) {
 					
 					if (method.getParameterNames().length == 1) {
 						
@@ -573,7 +576,7 @@ public class NewBuilderWizard extends SimpleWizard {
 			generator.generate();
 		} 
 		catch (JavaModelException e) {
-			e.printStackTrace();
+			MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", e.toString());
 		}
 		
 		return true;

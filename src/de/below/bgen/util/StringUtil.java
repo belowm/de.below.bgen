@@ -1,5 +1,6 @@
 package de.below.bgen.util;
 
+
 public class StringUtil {
 
 	/**
@@ -43,5 +44,10 @@ public class StringUtil {
 		return Character.toUpperCase(input.charAt(0)) + input.substring(1);
 
 	}
+	
+	public static String getPropertyNameFromSetter(String methodName) {
+		return decapitalize(methodName.substring(3));
+	}
+	
 
 }

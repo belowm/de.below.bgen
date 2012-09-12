@@ -40,8 +40,15 @@ public abstract class TargetTypeCreationStrategy {
 		public IType createBuilderType(IProgressMonitor pm, IType sourceType,
 				String builderName) throws JavaModelException {
 
+			IType existing = enclosingType.getType(builderName);
+			
+			if (existing.exists()) {
+				existing.delete(true, pm);
+			}
+			
 			return enclosingType.createType(String.format(STATIC_CLASS_BODY, builderName), null,
 					true, pm);
+			
 
 		}
 

@@ -1,4 +1,4 @@
-package de.below.bgen.actions;
+package de.below.bgen.action;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;

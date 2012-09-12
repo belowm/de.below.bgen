@@ -6,7 +6,7 @@
             id="bgen.CompilationUnitEditorContext"
             targetID="#CompilationUnitEditorContext">
          <action
-               class="de.below.bgen.actions.GenerateBuilderFromEditorAction"
+               class="de.below.bgen.action.GenerateBuilderFromEditorAction"
                definitionId="de.below.bgen.commands.generateBuilder"
                id="de.below.bgen.GenerateBuilderAction"
                label="Generate &amp;Builder..."
@@ -19,7 +19,7 @@
             id="de.below.bgen.ICompilationUnit.contribs"
             objectClass="org.eclipse.jdt.core.ICompilationUnit">
          <action
-               class="de.below.bgen.actions.GenerateBuilderFromSelection"
+               class="de.below.bgen.action.GenerateBuilderFromSelection"
                definitionId="de.below.bgen.commands.generateBuilder"
                id="de.below.bgen.GenerateBuilderAction"
                label="Generate &amp;Builder..."

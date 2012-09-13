@@ -5,6 +5,8 @@ import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 
 import de.below.bgen.TestUtils;
+import de.below.bgen.builder.generator.components.SetterGenerationStrategy;
+import de.below.bgen.builder.generator.components.SetterNamingStrategy;
 
 
 public class SetterGenerationStrategyTest {

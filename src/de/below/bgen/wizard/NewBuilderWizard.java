@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import de.below.bgen.Activator;
-import de.below.bgen.generator.BuilderGeneratorFacade;
+import de.below.bgen.builder.generator.BuilderGeneratorFacade;
 import de.below.bgen.wizard.MethodTableViewer.Columns;
 import de.below.rcp.util.ControlUtil;
 import de.below.rcp.widgets.SimpleComboViewer;

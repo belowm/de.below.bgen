@@ -1,4 +1,4 @@
-package de.below.bgen.generator;
+package de.below.bgen.builder.generator;
 
 import java.util.List;
 

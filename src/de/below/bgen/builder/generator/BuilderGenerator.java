@@ -1,4 +1,4 @@
-package de.below.bgen.generator;
+package de.below.bgen.builder.generator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,12 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.below.bgen.generator.Property.ConstructorArgument;
-import de.below.bgen.generator.components.FieldGenerationStrategy;
-import de.below.bgen.generator.components.InstantiationStrategy;
-import de.below.bgen.generator.components.SetterGenerationStrategy;
-import de.below.bgen.generator.components.SetterNamingStrategy;
-import de.below.bgen.generator.components.TargetTypeCreationStrategy;
+import de.below.bgen.builder.generator.Property.ConstructorArgument;
+import de.below.bgen.builder.generator.components.FieldGenerationStrategy;
+import de.below.bgen.builder.generator.components.InstantiationStrategy;
+import de.below.bgen.builder.generator.components.SetterGenerationStrategy;
+import de.below.bgen.builder.generator.components.SetterNamingStrategy;
+import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
 import de.below.bgen.util.Handler;
 import de.below.bgen.util.StringUtil;
 

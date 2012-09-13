@@ -1,4 +1,4 @@
-package de.below.bgen.generator.components;
+package de.below.bgen.builder.generator.components;
 
 import de.below.bgen.util.StringUtil;
 

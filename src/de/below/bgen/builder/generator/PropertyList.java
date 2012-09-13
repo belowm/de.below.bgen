@@ -1,11 +1,11 @@
-package de.below.bgen.generator;
+package de.below.bgen.builder.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.below.bgen.generator.Property.ConstructorArgument;
-import de.below.bgen.generator.Property.SetterProperty;
+import de.below.bgen.builder.generator.Property.ConstructorArgument;
+import de.below.bgen.builder.generator.Property.SetterProperty;
 import de.below.bgen.util.Handler;
 
 /**

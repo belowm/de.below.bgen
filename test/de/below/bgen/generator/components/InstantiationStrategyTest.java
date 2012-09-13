@@ -11,6 +11,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.junit.Test;
 
+import de.below.bgen.builder.generator.components.InstantiationStrategy;
+
 public class InstantiationStrategyTest {
 
 	@Test

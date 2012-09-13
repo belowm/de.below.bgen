@@ -27,6 +27,8 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.below.bgen.builder.generator.BuilderGeneratorFacade;
+
 public class BuilderGeneratorTest {
 
 	private static final NullProgressMonitor PROGRESS_MONITOR = new NullProgressMonitor();

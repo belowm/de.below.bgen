@@ -4,6 +4,8 @@ import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 
+import de.below.bgen.builder.generator.components.SetterNamingStrategy;
+
 
 public class SetterNamingStrategyTest {
 

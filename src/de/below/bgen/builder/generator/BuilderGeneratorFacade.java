@@ -1,4 +1,4 @@
-package de.below.bgen.generator;
+package de.below.bgen.builder.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,11 +11,11 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.below.bgen.generator.components.FieldGenerationStrategy;
-import de.below.bgen.generator.components.InstantiationStrategy;
-import de.below.bgen.generator.components.SetterGenerationStrategy;
-import de.below.bgen.generator.components.SetterNamingStrategy;
-import de.below.bgen.generator.components.TargetTypeCreationStrategy;
+import de.below.bgen.builder.generator.components.FieldGenerationStrategy;
+import de.below.bgen.builder.generator.components.InstantiationStrategy;
+import de.below.bgen.builder.generator.components.SetterGenerationStrategy;
+import de.below.bgen.builder.generator.components.SetterNamingStrategy;
+import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
 
 /**
  * "Fluent API" for setting up a {@link BuilderGenerator}.

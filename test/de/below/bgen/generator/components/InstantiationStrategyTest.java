@@ -20,7 +20,7 @@ public class InstantiationStrategyTest {
 		
 		IType type = createMockType("Person", true);
 
-		String instantiation = InstantiationStrategy.implicitDefaultConstructorCall(type).renderInstantiation();
+		String instantiation = InstantiationStrategy.defaultConstructorCall(type).renderInstantiation();
 		
 		assertEquals("constructor call", "new Person()", instantiation);
 		

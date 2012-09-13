@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 
-import de.below.bgen.util.StringUtil;
+import de.below.bgen.util.CodeGenUtils;
 
 /**
  * Fetches the properties that should be considered by the builder.
@@ -43,7 +43,7 @@ public class PropertyCollector {
 
 		for (IMethod setter : setterMethods) {
 
-			String propertyName = StringUtil.getPropertyNameFromSetter(setter
+			String propertyName = CodeGenUtils.getPropertyNameFromAccessorMethod(setter
 					.getElementName());
 			String type = Signature.toString(setter.getParameterTypes()[0]);
 			result.add(new Property.SetterProperty(type, propertyName, setter));

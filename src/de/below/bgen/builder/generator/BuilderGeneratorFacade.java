@@ -115,7 +115,7 @@ public class BuilderGeneratorFacade {
 		
 		if (instantiationStrategy == null) {
 			instantiationStrategy = InstantiationStrategy
-					.implicitDefaultConstructorCall(type);
+					.defaultConstructorCall(type);
 		}
 		
 		BuilderGenerator generator = new BuilderGenerator(progressMonitor, setterGenerator,

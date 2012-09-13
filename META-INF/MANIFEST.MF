@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.text,
  de.below.rcp.util;bundle-version="1.0.0",
+ org.eclipse.ui.ide,
  org.junit;resolution:=optional,
  org.easymock;bundle-version="2.5.2";resolution:=optional
 Bundle-ActivationPolicy: lazy

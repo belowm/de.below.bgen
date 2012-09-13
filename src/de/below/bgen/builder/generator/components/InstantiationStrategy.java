@@ -4,6 +4,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
+import de.below.bgen.util.CodeGenUtils;
+
 /**
  * Methods for rendering code that performs the actual instantiation of the
  * target type.
@@ -36,7 +38,7 @@ public abstract class InstantiationStrategy {
 				result.append('.');
 				result.append(factoryMethod.getElementName());
 
-				renderArgumentList(factoryMethod, result);
+				CodeGenUtils.renderArgumentList(factoryMethod, result);
 				return result.toString();
 
 			}
@@ -60,7 +62,7 @@ public abstract class InstantiationStrategy {
 				StringBuilder result = new StringBuilder("new ");
 				result.append(constructor.getDeclaringType().getElementName());
 
-				renderArgumentList(constructor, result);
+				CodeGenUtils.renderArgumentList(constructor, result);
 				return result.toString();
 
 			}
@@ -75,7 +77,7 @@ public abstract class InstantiationStrategy {
 	 * 
 	 * @param type The type to instantiate.
 	 */
-	public static InstantiationStrategy implicitDefaultConstructorCall(
+	public static InstantiationStrategy defaultConstructorCall(
 			final IType type) {
 		return new InstantiationStrategy(null) {
 			
@@ -93,21 +95,5 @@ public abstract class InstantiationStrategy {
 	public abstract String renderInstantiation() throws JavaModelException;
 
 	
-	protected void renderArgumentList(final IMethod method,
-			StringBuilder result) throws JavaModelException {
-		result.append("(");
-		for (int i = 0; i < method.getParameterNames().length; i++) {
-
-			String paramName = method.getParameterNames()[i];
-
-			if (i > 0) {
-				result.append(", ");
-			}
-
-			result.append(paramName);
-
-		}
-		result.append(")");
-	}
 	
 }

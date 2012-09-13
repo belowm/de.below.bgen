@@ -10,7 +10,6 @@
                definitionId="de.below.bgen.commands.generateBuilder"
                id="de.below.bgen.GenerateBuilderAction"
                label="Generate &amp;Builder..."
-				retarget="true"
                menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
          </action>
       </viewerContribution>
@@ -23,7 +22,6 @@
                definitionId="de.below.bgen.commands.generateBuilder"
                id="de.below.bgen.GenerateBuilderAction"
                label="Generate &amp;Builder..."
-               retarget="true"
                menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
          </action>
       </objectContribution>

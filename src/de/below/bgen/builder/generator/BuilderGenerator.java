@@ -1,6 +1,5 @@
 package de.below.bgen.builder.generator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,14 +7,13 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.below.bgen.builder.generator.Property.ConstructorArgument;
 import de.below.bgen.builder.generator.components.FieldGenerationStrategy;
 import de.below.bgen.builder.generator.components.InstantiationStrategy;
 import de.below.bgen.builder.generator.components.SetterGenerationStrategy;
 import de.below.bgen.builder.generator.components.SetterNamingStrategy;
 import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
+import de.below.bgen.util.CodeGenUtils;
 import de.below.bgen.util.Handler;
-import de.below.bgen.util.StringUtil;
 
 public class BuilderGenerator {
 
@@ -26,7 +24,6 @@ public class BuilderGenerator {
 	private final SetterGenerationStrategy setterGenerator;
 	private final FieldGenerationStrategy fieldGenerator;
 	private final SetterNamingStrategy setterNaming;
-	private List<IMethod> setterMethods;
 	private final TargetTypeCreationStrategy target;
 
 	private final InstantiationStrategy instantiationStrategy;
@@ -64,8 +61,6 @@ public class BuilderGenerator {
 			List<String> mandatoryProperties, String builderName)
 			throws JavaModelException {
 
-		this.setterMethods = setterMethods;
-
 		if (sourceType == null) {
 			throw new IllegalArgumentException("no source type given");
 		}
@@ -73,8 +68,8 @@ public class BuilderGenerator {
 		PropertyList properties = propertyCollector.collectProperties(
 				sourceType, instantiationStrategy.getMethod(), setterMethods);
 
-		IType builderType = target.createBuilderType(progressMonitor,
-				sourceType, builderName);
+		IType builderType = target.createTargetType(progressMonitor,
+				sourceType, builderName, null);
 
 		createFactoryMethod(sourceType, builderType);
 
@@ -82,7 +77,7 @@ public class BuilderGenerator {
 
 		createSettersAndFields(properties, builderType);
 		createBuildMethod(sourceType, instantiationStrategy.getMethod(),
-				builderType);
+				builderType, setterMethods);
 		createBuildUponMethod(sourceType, builderType);
 
 		format(builderType);
@@ -162,45 +157,6 @@ public class BuilderGenerator {
 
 
 	}
-
-	private List<IType> createStepInterfaces(PropertyList properties, IType sourceType,
-			IType builderType) throws JavaModelException {
-
-		List<IType> result = new ArrayList<IType>();
-
-		IType nextStep = createStepInterface(builderType, null, "Optional");
-		createBuildMethod(sourceType, instantiationStrategy.getMethod(),
-				nextStep);
-
-		result.add(nextStep);
-
-		List<ConstructorArgument> constructorArgs = properties.getConstructorArgs();
-		
-		for (int i = constructorArgs.size() - 1; i > -1; i--) {
-
-			ConstructorArgument property = constructorArgs.get(i);
-			IType stepInterface = createStepInterface(builderType, nextStep,
-					property.getName());
-			createStepInterfaceMethod(stepInterface, nextStep, property.getType(),
-					property.getName());
-			
-			nextStep = stepInterface;
-			result.add(stepInterface);
-		}
-
-		return result;
-
-	}
-
-	private void createStepInterfaceMethod(IType stepInterface, IType nextStep,
-			String propertyType, String propertyName) throws JavaModelException {
-
-		String setterCode = setterGenerator.renderSetterDeclaration(
-				setterNaming, nextStep, propertyName, propertyType);
-		stepInterface.createMethod(setterCode, null, true, progressMonitor);
-
-	}
-
 	private void createSetterAndField(IType builderType, Property property)
 			throws JavaModelException {
 		builderType.createField(
@@ -214,23 +170,10 @@ public class BuilderGenerator {
 
 	}
 
-	private IType createStepInterface(IType builderType, IType nextStep,
-			String propertyName) throws JavaModelException {
-
-		StringBuilder contents = new StringBuilder()
-				.append("public static interface ")
-				.append(StringUtil.capitalize(propertyName)).append("Step")
-				.append(" {\n}");
-
-		return builderType.createType(contents.toString(), nextStep, true,
-				progressMonitor);
-
-	}
-
 	private IMethod createBuildMethod(IType sourceType, IMethod constructor,
-			IType builderType) throws JavaModelException {
+			IType builderType, List<IMethod> setterMethods) throws JavaModelException {
 
-		StringBuilder setterCalls = renderSetterCalls();
+		StringBuilder setterCalls = renderSetterCalls(setterMethods);
 
 		String exceptions = renderExceptions(constructor);
 
@@ -268,13 +211,13 @@ public class BuilderGenerator {
 		return exceptions.toString();
 	}
 
-	private StringBuilder renderSetterCalls() {
+	private StringBuilder renderSetterCalls(List<IMethod> setterMethods) {
 		StringBuilder setterCalls = new StringBuilder();
 
 		for (IMethod method : setterMethods) {
 
 			setterCalls.append("\n\tresult.").append(method.getElementName())
-					.append("(").append(StringUtil.getPropertyNameFromSetter(method.getElementName()))
+					.append("(").append(CodeGenUtils.getPropertyNameFromAccessorMethod(method.getElementName()))
 					.append(");");
 
 		}

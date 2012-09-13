@@ -14,7 +14,8 @@ import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.text.edits.TextEdit;
 
 /**
- * Creates an empty {@link IType} for the builder.
+ * Strategies for creating an empty {@link IType}.
+ * 
  * @author martin below
  */
 public abstract class TargetTypeCreationStrategy {
@@ -23,7 +24,7 @@ public abstract class TargetTypeCreationStrategy {
 	private static final String STATIC_CLASS_BODY = "public static class %s {\n}";
 
 	/**
-	 * Creates the builder as a static nested class inside a given type.
+	 * Creates the type as a static nested class inside a given type.
 	 * 
 	 * @author martin
 	 */
@@ -37,18 +38,19 @@ public abstract class TargetTypeCreationStrategy {
 		}
 
 		@Override
-		public IType createBuilderType(IProgressMonitor pm, IType sourceType,
-				String builderName) throws JavaModelException {
+		public IType createTargetType(IProgressMonitor pm, IType sourceType,
+				String typeName, String content) throws JavaModelException {
 
-			IType existing = enclosingType.getType(builderName);
-			
+			IType existing = enclosingType.getType(typeName);
+
 			if (existing.exists()) {
 				existing.delete(true, pm);
 			}
+
+			String actualContent = content == null ? String.format(
+					STATIC_CLASS_BODY, typeName) : content;
 			
-			return enclosingType.createType(String.format(STATIC_CLASS_BODY, builderName), null,
-					true, pm);
-			
+			return enclosingType.createType(actualContent, null, true, pm);
 
 		}
 
@@ -62,7 +64,8 @@ public abstract class TargetTypeCreationStrategy {
 	}
 
 	/**
-	 * Creates the builder as a toplevel-class in a separate compilation unit.
+	 * Creates the type as a toplevel-class in a separate compilation unit.
+	 * 
 	 * @author martin below
 	 */
 	public static final class TopLevelTargetTypeStrategy extends
@@ -78,8 +81,8 @@ public abstract class TargetTypeCreationStrategy {
 		}
 
 		@Override
-		public IType createBuilderType(IProgressMonitor pm, IType sourceType,
-				String builderName) throws JavaModelException {
+		public IType createTargetType(IProgressMonitor pm, IType sourceType,
+				String typeName, String content) throws JavaModelException {
 
 			IPackageFragment packageFragment = sourceFolder
 					.createPackageFragment(packageName, true, pm);
@@ -87,12 +90,14 @@ public abstract class TargetTypeCreationStrategy {
 			packageFragment.makeConsistent(pm);
 
 			ICompilationUnit compilationUnit = packageFragment
-					.createCompilationUnit(builderName + ".java", "", true, pm);
+					.createCompilationUnit(typeName + ".java", "", true, pm);
 
 			ICompilationUnit sourceCu = sourceType.getCompilationUnit();
 
-			IType result = compilationUnit.createType(String.format(CLASS_BODY, builderName),
-					null, true, pm);
+			String actualContent = content == null ? String.format(CLASS_BODY, typeName) : content; 
+			
+			IType result = compilationUnit.createType(
+					actualContent, null, true, pm);
 
 			if (sourceCu != null) {
 				IImportDeclaration[] imports = sourceCu.getImports();
@@ -104,11 +109,13 @@ public abstract class TargetTypeCreationStrategy {
 			}
 
 			compilationUnit.createPackageDeclaration(packageName, pm);
-			
-			if (!sourceType.getPackageFragment().equals(result.getPackageFragment())) {
-				compilationUnit.createImport(sourceType.getFullyQualifiedName(), null, pm);
+
+			if (!sourceType.getPackageFragment().equals(
+					result.getPackageFragment())) {
+				compilationUnit.createImport(
+						sourceType.getFullyQualifiedName(), null, pm);
 			}
-			
+
 			return result;
 
 		}
@@ -125,20 +132,21 @@ public abstract class TargetTypeCreationStrategy {
 	private TargetTypeCreationStrategy() {
 	}
 
-
 	/**
-	 * Creates a new {@link IType} for the given builder. If the type already
+	 * Creates a new {@link IType} with the given name. If the type already
 	 * exists, it will be overwritten without any further notice.
 	 * 
 	 * @param pm
 	 * @param sourceType
 	 *            The class for which a builder should be created. This is
 	 *            needed here to obtain the required import statements from.
-	 * @param builderName Name of the builder class.
+	 * @param typeName
+	 *            Name of the type to be created, must not be <code>null</code>
+	 * @param content TODO
 	 * @throws JavaModelException
 	 */
-	public abstract IType createBuilderType(IProgressMonitor pm,
-			IType sourceType, String builderName) throws JavaModelException;
+	public abstract IType createTargetType(IProgressMonitor pm,
+			IType sourceType, String typeName, String content) throws JavaModelException;
 
 	/**
 	 * Formats the generated source code.

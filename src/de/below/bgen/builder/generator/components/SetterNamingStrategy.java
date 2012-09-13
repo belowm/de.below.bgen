@@ -1,6 +1,6 @@
 package de.below.bgen.builder.generator.components;
 
-import de.below.bgen.util.StringUtil;
+import de.below.bgen.util.CodeGenUtils;
 
 /**
  * Methods for rendering "setter"-methods for a given property.
@@ -28,7 +28,7 @@ public abstract class SetterNamingStrategy {
 
 		@Override
 		public String renderSetterNameFor(String propertyName) {
-			return StringUtil.decapitalize(propertyName);
+			return CodeGenUtils.decapitalize(propertyName);
 		}
 	};
 
@@ -60,7 +60,7 @@ public abstract class SetterNamingStrategy {
 
 		@Override
 		public String renderSetterNameFor(String propertyName) {
-			return prefix + StringUtil.capitalize(propertyName);
+			return prefix + CodeGenUtils.capitalize(propertyName);
 		}
 
 	}

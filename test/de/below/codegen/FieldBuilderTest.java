@@ -15,7 +15,7 @@ public class FieldBuilderTest {
 		JavaCodeWriter field = FieldBuilder.newField()
 			.type("String")
 			.name("hans")
-			.build();
+			.buildField();
 		
 		assertCodeEquals("field declaration", "String hans;", field.render());
 		
@@ -30,7 +30,7 @@ public class FieldBuilderTest {
 			.visibility(Visibility.PRIVATE)
 			.staticField(true)
 			.finalField(true)
-			.build();
+			.buildField();
 		
 		assertCodeEquals("field declaration", "private final static String hans;", field.render());
 		

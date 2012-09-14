@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.below.bgen.codegen.Visibility;
+import de.below.bgen.util.CodeGenUtils;
 
 /**
  * Low-Level-API for writing java source code.
@@ -22,10 +23,18 @@ public class JavaCodeWriter {
 		public static final String FINAL = "final";
 		public static final char SEMICOLON = ';';
 		public static final String RETURN = "return";
+		public static final char DOT = '.';
+		public static final String THROWS = "throws";
+		public static final char COMMA = ',';
+		public static final char EQUAL = '=';
+		public static final char DOUBLE_QUOTE = '"';
+		public static final String NEW = "new";
+		public static final char TAB = '\t';
 	}
-	
+
 	private final StringBuilder sink;
 	private int indention = 0;
+	private boolean newLine;
 
 	public static JavaCodeWriter create() {
 		return create(new StringBuilder());
@@ -44,10 +53,15 @@ public class JavaCodeWriter {
 	}
 
 	public JavaCodeWriter endBlock() {
-		return writeLine("}").decreaseIndention();
+		return decreaseIndention().writeLine("}");
 	}
 
-	public JavaCodeWriter whitespace() {
+	/**
+	 * Writes a space character.
+	 * 
+	 * @return this
+	 */
+	public JavaCodeWriter spc() {
 		return write(Tokens.WHITESPACE);
 	}
 
@@ -56,17 +70,29 @@ public class JavaCodeWriter {
 	}
 
 	public JavaCodeWriter write(String string) {
+		indent();
 		sink.append(string);
 		return this;
 	}
 
 	public JavaCodeWriter write(char character) {
+		indent();
 		sink.append(character);
 		return this;
 	}
 
+	private void indent() {
+		if (newLine) {
+			for (int i = 0; i < indention; i++) {
+				sink.append(Tokens.TAB );
+			}
+			newLine = false;
+		}
+	}
+
 	public JavaCodeWriter newLine() {
 		sink.append(Tokens.NEW_LINE);
+		this.newLine = true;
 		return this;
 	}
 
@@ -97,7 +123,7 @@ public class JavaCodeWriter {
 	public String toString() {
 		return render();
 	}
-	
+
 	public String render() {
 		return sink.toString();
 	}
@@ -115,45 +141,72 @@ public class JavaCodeWriter {
 	 * 
 	 * @param str
 	 *            The String to write.
-	 * @return 
+	 * @return
 	 */
 	public JavaCodeWriter writeWs(String str) {
-		return write(str).whitespace();
+		return write(str).spc();
 	}
 
 	public void writeClassDeclaration(String className, Visibility visibility,
 			boolean isStatic, boolean isFinal) {
 
 		renderVisibility(visibility);
-		
+
 		if (isStatic) {
 			writeWs(Tokens.STATIC);
 		}
-		
+
 		if (isFinal) {
 			writeWs(Tokens.FINAL);
 		}
-		
+
 		writeWs(Tokens.CLASS);
 		writeWs(className);
-		
+
 	}
-	
-	public JavaCodeWriter renderArgumentList(List<Argument> arguments) {
-		
-		for (Iterator<Argument> it = arguments.iterator(); it.hasNext();) {
-			
+
+	public JavaCodeWriter renderArgumentList(
+			List<? extends Argument> arguments, boolean includeTypes) {
+
+		for (Iterator<? extends Argument> it = arguments.iterator(); it
+				.hasNext();) {
+
 			Argument arg = it.next();
-			write(arg.getType()).whitespace().write(arg.getName());
-			
+
+			if (includeTypes) {
+				writeWs(arg.getType());
+			}
+
+			write(arg.getName());
+
 			if (it.hasNext()) {
 				write(", ");
 			}
-			
+
 		}
-		
+
 		return this;
-		
+
+	}
+
+	public JavaCodeWriter terminateStatement() {
+		return write(Tokens.SEMICOLON);
+	}
+
+	/**
+	 * Creates a representation of the given string where the first letter is
+	 * upper-case, and writes it.
+	 * 
+	 * @param str
+	 *            The String to capitalize and write.
+	 * @return this
+	 */
+	public JavaCodeWriter writeCapitalized(String str) {
+		return write(CodeGenUtils.capitalize(str));
+	}
+
+	public JavaCodeWriter writeWs(char character) {
+		return write(character).spc();
 	}
 
 }

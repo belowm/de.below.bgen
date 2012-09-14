@@ -14,7 +14,7 @@ public class ClassBuilderTest {
 		String content = ClassBuilder
 			.newClass()
 				.visibility(Visibility.PUBLIC)
-				.staticClass()
+				.staticClass(true)
 				.finalClass()
 				.name("Hans")
 			.endClass()
@@ -50,7 +50,7 @@ public class ClassBuilderTest {
 		String content = ClassBuilder
 			.newClass()
 				.visibility(Visibility.PUBLIC)
-				.staticClass()
+				.staticClass(true)
 				.finalClass()
 				.name("Hans")
 				.beginMethod()

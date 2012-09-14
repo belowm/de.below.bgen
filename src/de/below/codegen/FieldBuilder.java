@@ -55,7 +55,7 @@ public class FieldBuilder {
 		 * 
 		 * @return The parent object given on construction of the class.
 		 */
-		T build();
+		T buildField();
 	}
 	
 	private final static class Steps<T> implements FieldTypeStep<T>, FieldNameStep<T>, BuildStep<T> {
@@ -105,7 +105,7 @@ public class FieldBuilder {
 		}
 
 		@Override
-		public T build() {
+		public T buildField() {
 			
 			out.renderVisibility(visibility);
 			

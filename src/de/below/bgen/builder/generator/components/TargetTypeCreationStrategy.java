@@ -1,6 +1,7 @@
 package de.below.bgen.builder.generator.components;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -59,6 +60,11 @@ public abstract class TargetTypeCreationStrategy {
 				throws JavaModelException {
 
 			return targetType.getSourceRange();
+		}
+
+		@Override
+		public boolean isMainType() {
+			return false;
 		}
 
 	}
@@ -127,6 +133,11 @@ public abstract class TargetTypeCreationStrategy {
 			return targetType.getCompilationUnit().getSourceRange();
 		}
 
+		@Override
+		public boolean isMainType() {
+			return true;
+		}
+
 	}
 
 	private TargetTypeCreationStrategy() {
@@ -158,6 +169,12 @@ public abstract class TargetTypeCreationStrategy {
 
 		ICompilationUnit compilationUnit = targetType.getCompilationUnit();
 		compilationUnit.reconcile(AST.JLS3, true, null, null);
+		
+		System.out.println(compilationUnit.getSource());
+		
+		compilationUnit.makeConsistent(null);
+		
+		//compilationUnit.reconcile(AST.JLS3, true, null, null);
 
 		ISourceRange range = getTargetRange(targetType);
 
@@ -167,12 +184,20 @@ public abstract class TargetTypeCreationStrategy {
 				compilationUnit.getSource(), range.getOffset(),
 				range.getLength(), 0, null);
 
-		compilationUnit.applyTextEdit(edit, null);
+		compilationUnit.applyTextEdit(edit, new NullProgressMonitor());
+		
+		System.out.println(compilationUnit.getBuffer());
+		
+		compilationUnit.getBuffer().save(null, true);
+		
 		compilationUnit.reconcile(AST.JLS3, true, null, null);
 
+		compilationUnit.makeConsistent(null);
 	}
 
 	protected abstract ISourceRange getTargetRange(IType targetType)
 			throws JavaModelException;
+
+	public abstract boolean isMainType();
 
 }

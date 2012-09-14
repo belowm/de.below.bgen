@@ -22,9 +22,9 @@ public class ClassBuilder {
 	public static interface ClassNameStep<T> {
 
 		/**
-		 * Creates a static class.
+		 * Sets whether to create a static class.
 		 */
-		ClassNameStep<T> staticClass();
+		ClassNameStep<T> staticClass(boolean createStaticClass);
 
 		/**
 		 * Creates a final class
@@ -96,8 +96,8 @@ public class ClassBuilder {
 		}
 
 		@Override
-		public ClassNameStep<T> staticClass() {
-			this.isStatic = true;
+		public ClassNameStep<T> staticClass(boolean createStatic) {
+			this.isStatic = createStatic;
 			return this;
 		}
 

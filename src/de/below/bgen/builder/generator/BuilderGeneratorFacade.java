@@ -11,9 +11,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
-import de.below.bgen.builder.generator.components.FieldGenerationStrategy;
 import de.below.bgen.builder.generator.components.InstantiationStrategy;
-import de.below.bgen.builder.generator.components.SetterGenerationStrategy;
 import de.below.bgen.builder.generator.components.SetterNamingStrategy;
 import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
 
@@ -23,8 +21,6 @@ import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
  */
 public class BuilderGeneratorFacade {
 
-	private SetterGenerationStrategy setterGenerator = SetterGenerationStrategy.FLUENT;
-	private final FieldGenerationStrategy fieldGenerationStrategy = FieldGenerationStrategy.PRIVATE_MUTABLE;
 	private SetterNamingStrategy setterNamingStrategy = SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING;
 	private String builderName;
 	private IProgressMonitor progressMonitor = new NullProgressMonitor();
@@ -33,6 +29,7 @@ public class BuilderGeneratorFacade {
 	private TargetTypeCreationStrategy targetTypeCreationStrategy;
 	
 	private InstantiationStrategy instantiationStrategy;
+	private boolean fluentSetters = true;
 
 	public static BuilderGeneratorFacade newInstance() {
 		return new BuilderGeneratorFacade();
@@ -40,21 +37,6 @@ public class BuilderGeneratorFacade {
 
 	private BuilderGeneratorFacade() {
 
-	}
-
-	/**
-	 * Configures the generator to generate fluent setters, meaning that each
-	 * setter-method will return the builder itself. This is useful for chaining
-	 * a sequence of calls to the builder.
-	 * 
-	 * @param generateFluentSetters
-	 * @return {@link BuilderGeneratorFacade this}
-	 */
-	public BuilderGeneratorFacade withFluentSetters(
-			boolean generateFluentSetters) {
-		setterGenerator = generateFluentSetters ? SetterGenerationStrategy.FLUENT
-				: SetterGenerationStrategy.JAVA_BEAN;
-		return this;
 	}
 
 	/**
@@ -118,8 +100,8 @@ public class BuilderGeneratorFacade {
 					.defaultConstructorCall(type);
 		}
 		
-		BuilderGenerator generator = new BuilderGenerator(progressMonitor, setterGenerator,
-				fieldGenerationStrategy, setterNamingStrategy, targetTypeCreationStrategy, instantiationStrategy);
+		BuilderGenerator generator = new BuilderGenerator(progressMonitor,
+				setterNamingStrategy, targetTypeCreationStrategy, instantiationStrategy, fluentSetters);
 
 		generator.generate(type, setterProperties, new ArrayList<String>(), builderName);
 	}
@@ -159,6 +141,11 @@ public class BuilderGeneratorFacade {
 
 	public BuilderGeneratorFacade withFactoryMethod(IMethod factoryMethod) throws JavaModelException {
 		instantiationStrategy = InstantiationStrategy.factoryMethodCall(factoryMethod);
+		return this;
+	}
+
+	public BuilderGeneratorFacade withFluentSetters(boolean fluentSetters) {
+		this.fluentSetters = fluentSetters;
 		return this;
 	}
 

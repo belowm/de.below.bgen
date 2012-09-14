@@ -1,7 +1,7 @@
 package de.below.bgen.bean.generator;
 
-import static de.below.bgen.util.CodeGenUtils.decapitalize;
-import static de.below.bgen.util.CodeGenUtils.getPropertyNameFromAccessorMethod;
+import static de.below.bgen.builder.generator.Expressions.*;
+import static de.below.bgen.util.CodeGenUtils.*;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 
+import de.below.bgen.builder.generator.Expressions;
 import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
 import de.below.bgen.codegen.Visibility;
 import de.below.bgen.util.CodeGenUtils;
@@ -19,7 +20,6 @@ import de.below.codegen.ClassBuilder.InClassStep;
 import de.below.codegen.ConstructorBuilder.ArgsStep;
 import de.below.codegen.ConstructorBuilder.InConstructorStep;
 import de.below.codegen.JavaCodeWriter;
-import de.below.codegen.JavaCodeWriter.Tokens;
 
 public class BeanGenerator {
 
@@ -115,11 +115,13 @@ public class BeanGenerator {
 	private void createGetterMethod(InClassStep<JavaCodeWriter> targetType, IMethod getterMethod) 
 	throws JavaModelException {
 
+		String propertyName = getPropertyNameFromAccessorMethod(getterMethod.getElementName());
+		
 		targetType.beginMethod()
 			.visibility(Visibility.PUBLIC)
 			.returnType(Signature.toString(getterMethod.getReturnType()))
 			.name(getterMethod.getElementName())
-			.addStatement(Tokens.RETURN, decapitalize(getterMethod.getElementName().substring(3)))
+			.addStatement(returnStatement(variable(propertyName)))
 		.endMethod();
 			
 	}
@@ -134,7 +136,7 @@ public class BeanGenerator {
 			.returnType(Signature.toString(getterMethod.getReturnType()))
 			.argument(Signature.toString(getterMethod.getReturnType()), propertyName)
 			.name("set" + CodeGenUtils.capitalize(propertyName))
-			.addStatement("this.", propertyName, "=", propertyName)
+			.addStatement(Expressions.assignment(self(), variable(propertyName), variable(propertyName)))
 		.endMethod();
 		
 	}
@@ -147,7 +149,7 @@ public class BeanGenerator {
 			.name(decapitalize(getterMethod.getElementName().substring(3)))
 			.finalField(!mutable)
 			.visibility(Visibility.PRIVATE)
-			.build()
+			.buildField()
 			;
 		
 	}

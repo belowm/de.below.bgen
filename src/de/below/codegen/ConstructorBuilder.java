@@ -86,10 +86,10 @@ public class ConstructorBuilder {
 			out.write(typeName);
 			
 			out.openParenthesis();
-			out.renderArgumentList(arguments);
+			out.renderArgumentList(arguments, true);
 			out.closeParenthesis();
 			
-			out.whitespace();
+			out.spc();
 			out.startBlock();
 			
 			return this;

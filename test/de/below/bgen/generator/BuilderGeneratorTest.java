@@ -5,6 +5,7 @@ import static junit.framework.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -70,8 +71,6 @@ public class BuilderGeneratorTest extends AbstractWorkspaceAwareTest {
 		ICompilationUnit cu = getCompilationUnitFor("de.foo.bar", "Person.java", classWithConstructor);
 		ICompilationUnit targetUnit = getCompilationUnitFor("de.foo.bar", "PersonBuilder.java", "");
 		
-		System.out.println(Arrays.toString(cu.getTypes()));
-		
 		IType type = cu.getType("Person");
 		
 		assertTrue(type.exists());
@@ -92,15 +91,18 @@ public class BuilderGeneratorTest extends AbstractWorkspaceAwareTest {
 			IType builderType = targetUnit.getType("PersonBuilder");
 			assertTrue("did not create target type. types created: " + 
 					Arrays.toString(targetUnit.getTypes()), builderType.exists());
+
+			IField field1 = builderType.getField("firstname");
+			assertTrue("did not create field for argument 'firstname'", field1.exists());
 			
 			IMethod setter1 = builderType.getMethod("setFirstname", new String[] { "QString;" });
 			assertTrue("did not create setter for constructor argument firstname", setter1.exists());
 			
-			IField field1 = builderType.getField("firstname");
-			assertTrue("did not create field for argument 'firstname'", field1.exists());
 			
 			assertTrue("did not create builder factory method", builderType.getMethod("newBuilder", new String[] {}).exists());
 		}
+		
+		dump(targetUnit);
 		
 	}
 
@@ -166,7 +168,7 @@ public class BuilderGeneratorTest extends AbstractWorkspaceAwareTest {
 	}
 
 	@Test
-	public void mustBuildUponMethod() throws CoreException {
+	public void mustCreateBuildUponMethod() throws CoreException {
 		
 		ICompilationUnit cu = getCompilationUnitFor("de.hans.peter", "Bean.java", beanClass);
 		ICompilationUnit targetUnit = getCompilationUnitFor("de.hans.peter", "BeanBuilder.java", "");
@@ -189,6 +191,32 @@ public class BuilderGeneratorTest extends AbstractWorkspaceAwareTest {
 				builderType.getMethod("buildUpon", new String[] { "QBean;" });
 			
 			assertTrue("did not create buildUponMethod", buildUponMethod.exists());
+			
+		}
+	}
+	
+	@Test
+	public void mustCreateFactoryMethod() throws CoreException {
+		
+		ICompilationUnit cu = getCompilationUnitFor("de.hans.peter", "Bean.java", beanClass);
+		ICompilationUnit targetUnit = getCompilationUnitFor("de.hans.peter", "BeanBuilder.java", "");
+		IType type = cu.getType("Bean");
+		
+		generator.withType(type);
+		generator.withTargetPackageName((IPackageFragmentRoot) targetUnit
+				.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT), "de.hans.peter");
+		generator.withBuilderName("BeanBuilder");
+		generator.withSetterPrefix(null);
+		generator.generate();
+
+		{
+			IType builderType = targetUnit.getType("BeanBuilder");
+			
+			IMethod factoryMethod = 
+				builderType.getMethod("newBuilder", new String[] {  });
+			
+			assertTrue("did not create factory-method", factoryMethod.exists());
+			assertTrue("factory method not static", (factoryMethod.getFlags() & Flags.AccStatic) > 0);
 			
 		}
 	}

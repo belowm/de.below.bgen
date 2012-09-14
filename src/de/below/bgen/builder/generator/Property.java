@@ -2,17 +2,16 @@ package de.below.bgen.builder.generator;
 
 import org.eclipse.jdt.core.IMethod;
 
+import de.below.bgen.util.CodeGenUtils;
+import de.below.codegen.Argument;
+
 /**
  * @author martin
  */
-public abstract class Property {
-
-	private final String type;
-	private final String name;
+public abstract class Property extends Argument {
 
 	Property(String type, String name) {
-		this.type = type;
-		this.name = name;
+		super(type, name);
 	}
 
 	/**
@@ -72,17 +71,27 @@ public abstract class Property {
 
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
 	@Override
 	public String toString() {
-		return "Property [type=" + type + ", name=" + name + "]";
+		return "Property [type=" + getType() + ", name=" + getName() + "]";
 	}
 
+	/**
+	 * Returns the name of the getter method for this property.
+	 * 
+	 * @return The getter method name, never <code>null</code>.
+	 */
+	public String renderGetterName() {
+		return "get" + CodeGenUtils.capitalize(getName());
+	}
+
+	/**
+	 * Returns the name of the getter method for this property.
+	 * 
+	 * @return The getter method name, never <code>null</code>.
+	 */
+	public String renderSetterName() {
+		return "set" + CodeGenUtils.capitalize(getName());
+	}
+	
 }

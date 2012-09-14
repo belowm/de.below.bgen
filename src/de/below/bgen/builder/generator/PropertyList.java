@@ -17,6 +17,7 @@ public class PropertyList {
 
 	private final List<ConstructorArgument> constructorArgs = new ArrayList<Property.ConstructorArgument>();
 	private final List<SetterProperty> setterProperties = new ArrayList<Property.SetterProperty>();
+	private List<Property> all;
 
 	public PropertyList() {
 	}
@@ -81,6 +82,21 @@ public class PropertyList {
 			handler.handle(constructorArg);
 		}
 
+	}
+
+	/**
+	 * FIXME clean up
+	 * @return
+	 */
+	public List<Property >getAll() {
+		
+		if (all == null) {
+			List<Property> result = new ArrayList<Property>();
+			result.addAll(constructorArgs);
+			result.addAll(setterProperties);
+			all = result;
+		}
+		return all;
 	}
 
 }

@@ -430,7 +430,7 @@ public class NewBuilderWizard extends SimpleWizard {
 		FilteredTypesSelectionDialog dialog = new FilteredTypesSelectionDialog(getShell(),
 			false, getContainer(), scope, IJavaSearchConstants.TYPE);
 		dialog.setTitle("Chose enclosing type");
-		dialog.setMessage("Please chose the enclosing type where the builder should be created in.");
+		dialog.setMessage("Please select the class for which the builder should be created.");
 		dialog.setInitialPattern(Signature.getSimpleName(type.getElementName()));
 
 		if (dialog.open() == Window.OK) {

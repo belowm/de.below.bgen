@@ -76,7 +76,7 @@ public class BuilderGenerator {
 
 		createFactoryMethod(builderName, builder);
 
-		// createStepInterfaces(properties, sourceType, builderType);
+		createBuildUponMethod(sourceType, properties, builder, builderName);
 
 		createFields(properties.getConstructorArgs(), builder);
 		createFields(properties.getSetterProperties(), builder);
@@ -86,8 +86,6 @@ public class BuilderGenerator {
 
 		createBuildMethod(sourceType, properties, instantiationMethod, builder);
 
-		createBuildUponMethod(sourceType, properties, builder, builderName);
-		//
 
 		String builderSourceCode = builder.endClass().render();
 

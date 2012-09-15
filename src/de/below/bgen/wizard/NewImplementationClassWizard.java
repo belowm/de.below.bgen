@@ -78,7 +78,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 	protected void createPages() {
 
 		
-		page1 = new InitializableWizardPage("Create Builder") {
+		page1 = new InitializableWizardPage("Create Implementation Class") {
 
 
 			{
@@ -142,7 +142,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 					sourceTypeInput.setText(type.getFullyQualifiedName());
 					targetTypeNameInput.setText("Standard" + type.getElementName());
 					targetPackageNameInput.setText(type.getPackageFragment().getElementName());
-					doEncloseInType.setSelection(true);
+//					doEncloseInType.setSelection(true);
 					enclosingTypeNameInput.setText(type.getFullyQualifiedName());
 					
 					ControlUtil.raiseEvent(doEncloseInType, SWT.Selection, new Event());

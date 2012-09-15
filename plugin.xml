@@ -8,8 +8,14 @@
          <action
                class="de.below.bgen.action.GenerateBuilderFromEditorAction"
                definitionId="de.below.bgen.commands.generateBuilder"
-               id="de.below.bgen.GenerateBuilderAction"
+               id="de.below.bgen.action.GenerateBuilderFromEditorAction"
                label="Generate &amp;Builder..."
+               menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
+         </action>
+         <action
+               class="de.below.bgen.action.GenerateImplFromEditorAction"
+               id="de.below.bgen.action.GenerateImplFromEditorAction"
+               label="Generate &amp;Implementation Class..."
                menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
          </action>
       </viewerContribution>
@@ -18,10 +24,16 @@
             id="de.below.bgen.ICompilationUnit.contribs"
             objectClass="org.eclipse.jdt.core.ICompilationUnit">
          <action
-               class="de.below.bgen.action.GenerateBuilderFromSelection"
+               class="de.below.bgen.action.GenerateBuilderFromSelectionAction"
                definitionId="de.below.bgen.commands.generateBuilder"
-               id="de.below.bgen.GenerateBuilderAction"
+               id="de.below.bgen.action.GenerateBuilderFromSelectionAction"
                label="Generate &amp;Builder..."
+               menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
+         </action>
+         <action
+               class="de.below.bgen.action.GenerateImplFromSelectionAction"
+               id="de.below.bgen.action.GenerateImplFromSelectionAction"
+               label="Generate &amp;Implementation Class..."
                menubarPath="org.eclipse.jdt.ui.source.menu/generateGroup">
          </action>
       </objectContribution>

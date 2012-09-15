@@ -52,7 +52,7 @@ public class BeanGeneratorTest extends AbstractWorkspaceAwareTest {
 		BeanGenerator generator = new BeanGenerator(type, "PersonImpl",
 				PROGRESS_MONITOR, targetTypeGenerator, true);
 
-		IType implementation = generator.generate();
+		IType implementation = generator.run();
 
 		dump(implementation.getCompilationUnit());
 
@@ -83,7 +83,7 @@ public class BeanGeneratorTest extends AbstractWorkspaceAwareTest {
 		BeanGenerator generator = new BeanGenerator(type, "PersonImpl",
 				PROGRESS_MONITOR, targetTypeGenerator, false);
 
-		IType implementation = generator.generate();
+		IType implementation = generator.run();
 
 		dump(implementation.getCompilationUnit());
 

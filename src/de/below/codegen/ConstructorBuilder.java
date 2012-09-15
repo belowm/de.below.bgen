@@ -3,8 +3,8 @@ package de.below.codegen;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.below.bgen.codegen.Expression;
 import de.below.bgen.codegen.Visibility;
-import de.below.codegen.JavaCodeWriter.Tokens;
 
 public class ConstructorBuilder {
 	
@@ -25,7 +25,8 @@ public class ConstructorBuilder {
 	}
 	
 	public static interface InConstructorStep<T> {
-		InConstructorStep<T> addStatement(String... statement);
+		InConstructorStep<T> addStatement(Statement statement);
+		InConstructorStep<T> addStatement(Expression expression);
 		T endConstructor();
 	}	
 	
@@ -53,18 +54,25 @@ public class ConstructorBuilder {
 		}
 		
 		@Override
-		public InConstructorStep<T> addStatement(String... statement) {
-			
-			for (String part : statement) {
-				out.writeWs(part);
-			}
-			
-			if (statement.length > 0) {
-				out.write(Tokens.SEMICOLON);
-				out.newLine();
-			}
+		public InConstructorStep<T> addStatement(Statement statement) {
+
+			statement.render(out);
+			out.terminateStatement().newLine();
 			return this;
 		}
+		
+		@Override
+		public InConstructorStep<T> addStatement(final Expression expression) {
+			return addStatement(new Statement() {
+
+				@Override
+				public void render(JavaCodeWriter out) {
+					expression.render(out);
+				}
+				
+			});
+		}
+		
 
 		@Override
 		public T endConstructor() {

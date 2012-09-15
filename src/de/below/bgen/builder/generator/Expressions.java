@@ -276,6 +276,24 @@ public class Expressions {
 			}
 		};
 	}
+	
+	public static Variable field(final Type type, final String name) {
+		
+		return new Variable() {
+
+			@Override
+			public void render(JavaCodeWriter out) {
+				out.write(type.name).write(Tokens.DOT).write(name);
+			}
+
+			@Override
+			public String getName() {
+				return type.name + Tokens.DOT + name;
+			}
+			
+		};
+		
+	}
 
 	/**
 	 * A constructor call.

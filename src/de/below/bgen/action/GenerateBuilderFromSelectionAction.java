@@ -4,11 +4,12 @@ import org.eclipse.jdt.core.IType;
 
 import de.below.bgen.wizard.NewBuilderWizard;
 
-public class GenerateBuilderFromEditorAction extends OpenWizardFromEditorAction {
+public class GenerateBuilderFromSelectionAction extends OpenWizardFromSelectionAction {
 
 	@Override
 	protected NewBuilderWizard createWizard(IType type) {
-		return new NewBuilderWizard(type);
+		NewBuilderWizard wizard = new NewBuilderWizard(type);
+		return wizard;
 	}
 
 }

@@ -41,7 +41,7 @@ public class BeanGenerator {
 		this.mutable = mutable;
 	}
 
-	public IType generate() throws JavaModelException {
+	public IType run() throws JavaModelException {
 
 		InClassStep<JavaCodeWriter> targetType = ClassBuilder.newClass()
 			.visibility(Visibility.PUBLIC)
@@ -54,6 +54,9 @@ public class BeanGenerator {
 			createFieldFor(targetType, getterMethod);
 		}
 		
+		if (!mutable) {
+			createConstructor(targetType, methodAnalyzer.getGetters());
+		}
 
 		for (IMethod getterMethod : methodAnalyzer.getGetters()) {
 			
@@ -64,26 +67,11 @@ public class BeanGenerator {
 			}
 		}
 
-		if (!mutable) {
-			createConstructor(targetType, methodAnalyzer.getGetters());
-		}
-
-		
-		/*
-		for (Property property : properties.getSetterProperties()) {
-			String setterCode = setterGenerationStrategy.renderSetterCode(
-					SetterNamingStrategy.JAVA_BEAN_SETTER_NAMING, null,
-					property.getName(), property.getType());
-			
-			targetType.createMethod(setterCode, targetType, true, pm);
-		}
-		*/
-		
-		//return targetType;
-		
 		String sourceCode = targetType.endClass().render();
 		
-		return targetTypeGenerator.createTargetType(pm, interfaceType, targetTypeName, sourceCode);
+		IType type = targetTypeGenerator.createTargetType(pm, interfaceType, targetTypeName, sourceCode);
+		targetTypeGenerator.format(type);
+		return type;
 		
 	}
 
@@ -105,7 +93,7 @@ public class BeanGenerator {
 			
 		for (IMethod getter: getterMethods) {
 			String propertyName = getPropertyNameFromAccessorMethod(getter.getElementName());
-			constructor.addStatement("this.", propertyName, "=", propertyName);
+			constructor.addStatement(Expressions.assignment(field(self(), propertyName), variable(propertyName)));
 		}
 		
 		constructor.endConstructor();

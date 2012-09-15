@@ -89,9 +89,15 @@ public class NewBuilderWizard extends SimpleWizard {
 			@Override
 			public void validate() throws ValidationError {
 				
-				if (doEncloseInType.getSelection()) {
-					testConstraint(ERROR, getEnclosingType() == null, enclosingTypeNameInput, "Enclosing type not found!");
-					testConstraint(ERROR, getEnclosingType().isReadOnly(), enclosingTypeNameInput, "Enclosing type not writeable!");
+				try {
+					if (doEncloseInType.getSelection()) {
+						testConstraint(ERROR, getEnclosingType() == null, enclosingTypeNameInput, "Enclosing type not found!");
+						testConstraint(ERROR, getEnclosingType().isReadOnly(), enclosingTypeNameInput, "Enclosing type not writeable!");
+						testConstraint(ERROR, type.isInterface(), sourceTypeInput, "Selected type is an Interface!");
+					}
+				} 
+				catch (JavaModelException e) {
+					// swallow
 				}
 			
 			}

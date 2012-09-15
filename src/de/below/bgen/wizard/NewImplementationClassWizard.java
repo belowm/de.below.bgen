@@ -1,14 +1,11 @@
 package de.below.bgen.wizard;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
@@ -37,7 +34,6 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import de.below.bgen.Activator;
 import de.below.bgen.bean.generator.BeanGenerator;
 import de.below.bgen.builder.generator.components.TargetTypeCreationStrategy;
-import de.below.bgen.wizard.MethodTableViewer.Columns;
 import de.below.rcp.util.ControlUtil;
 import de.below.rcp.widgets.SimpleComboViewer;
 import de.below.rcp.widgets.SimpleWizard;
@@ -64,11 +60,8 @@ public class NewImplementationClassWizard extends SimpleWizard {
 	private Text targetTypeNameInput;
 	private Text targetPackageNameInput;
 	private Text enclosingTypeNameInput;
-	private SimpleComboViewer<IMethod> constructorInput;
-	private MethodTableViewer settersViewer;
 	private IType type;
 	private InitializableWizardPage page1;
-	private InitializableWizardPage page2;
 
 	public NewImplementationClassWizard(IType type) {
 		this.type = type;
@@ -78,7 +71,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 	protected void createPages() {
 
 		
-		page1 = new InitializableWizardPage("Create Implementation Class") {
+		addPage(new InitializableWizardPage("Create Implementation Class") {
 
 
 			{
@@ -89,9 +82,15 @@ public class NewImplementationClassWizard extends SimpleWizard {
 			@Override
 			public void validate() throws ValidationError {
 				
-				if (doEncloseInType.getSelection()) {
-					testConstraint(ERROR, getEnclosingType() == null, enclosingTypeNameInput, "Enclosing type not found!");
-					testConstraint(ERROR, getEnclosingType().isReadOnly(), enclosingTypeNameInput, "Enclosing type not writeable!");
+				try {
+					if (doEncloseInType.getSelection()) {
+						testConstraint(ERROR, getEnclosingType() == null, enclosingTypeNameInput, "Enclosing type not found!");
+						testConstraint(ERROR, getEnclosingType().isReadOnly(), enclosingTypeNameInput, "Enclosing type not writeable!");
+							testConstraint(ERROR, !type.isInterface(), sourceTypeInput, "Selected type is not an interface");
+					}
+				} 
+				catch (JavaModelException e) {
+					// swallow
 				}
 			
 			}
@@ -132,7 +131,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 
 			private void createOptionsSection(Composite composite) {
 
-				GridDataFactory gridDataFactory = GridDataFactory.swtDefaults().span(2, 1);
+//				GridDataFactory gridDataFactory = GridDataFactory.swtDefaults().span(2, 1);
 				
 			}
 
@@ -161,7 +160,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 			}
 
 			private void createSourceTypeSection(Composite composite) {
-				newLabel(composite, "Class to create Builder for:", 1);
+				newLabel(composite, "Interface:", 1);
 				sourceTypeInput = newText(composite, 2);
 				Button button = newButton(composite, "Browse...", SWT.PUSH);
 				
@@ -174,8 +173,8 @@ public class NewImplementationClassWizard extends SimpleWizard {
 						
 						if (newType != null) {
 							type = newType;
+							sourceTypeInput.setText(type.getFullyQualifiedName());
 							page1.initializeDefaults();
-							page2.initializeDefaults();
 						}
 					}
 
@@ -264,95 +263,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 				
 			}
 
-		};
-		
-		page2 = new InitializableWizardPage("Select properties") {
-			
-			{
-				setDescription(DESCRIPTION);
-			}
-			
-			@Override
-			public void validate() throws ValidationError {
-				
-			}
-			
-			@Override
-			public void createControl(Composite parent) {
-				
-				initializeDialogUnits(parent);
-				
-				Composite composite = new Composite(parent, SWT.NONE);
-				composite.setFont(parent.getFont());
-				
-				GridLayoutFactory.fillDefaults().numColumns(2).spacing(8, 6).applyTo(composite);
-				
-				createConstructorSection(composite);
-				createPropertyViewer(composite);
-				
-				initializeDefaults();
-				
-				setControl(composite);
-			}
-
-			private void createPropertyViewer(Composite composite) {
-				
-				newLabel(composite, "Include additional properties from setters:", 2);
-				
-				settersViewer = new MethodTableViewer(composite, SWT.BORDER,
-						SWT.FULL_SELECTION | SWT.CHECK, Columns.SIGNATURE);
-				
-				GridDataFactory.fillDefaults().grab(true, false).span(2, 1)
-						.hint(SWT.DEFAULT, 240)
-						.applyTo(settersViewer);
-				
-				constructorInput.getControl().addListener(SWT.Selection, new Listener() {
-
-					@Override
-					public void handleEvent(Event event) {
-						loadSetters();
-					}
-					
-				});
-				
-			}
-			
-			@Override
-			protected void initializeDefaults() {
-				
-
-				List<IMethod> constructors = findConstructorsFor(type);
-				constructorInput.setInput(constructors);
-				
-				if (!constructors.isEmpty()) {
-					constructorInput.setSelection(constructors.get(0));
-				}
-				
-				loadSetters();
-
-			}
-
-			private void loadSetters() {
-				Collection<IMethod> setters = getSettersFor(type, constructorInput.getSelection());
-				settersViewer.setInput(setters);
-				settersViewer.setChecked(setters, true);
-			}
-
-			private void createConstructorSection(Composite composite) {
-
-				newLabel(composite, "Constructor to call: ", 1);
-				
-				constructorInput = new SimpleComboViewer<IMethod>(
-						composite, SWT.READ_ONLY, IMethod.class, LabelProviders.METHOD);
-				
-				GridDataFactory.fillDefaults().grab(true, false).applyTo(constructorInput.getControl());
-				
-			}
-
-		};
-		
-		addPage(page1);
-		addPage(page2);
+		});
 		
 	}
 
@@ -409,7 +320,7 @@ public class NewImplementationClassWizard extends SimpleWizard {
 						.getAncestor(IJavaElement.JAVA_PROJECT) });
 
 		FilteredTypesSelectionDialog dialog = new FilteredTypesSelectionDialog(getShell(),
-			false, getContainer(), scope, IJavaSearchConstants.INSTANCEOF_TYPE_REFERENCE);
+			false, getContainer(), scope, IJavaSearchConstants.INTERFACE);
 		dialog.setTitle("Select source type");
 		dialog.setMessage("Please select the interface for which a new implementation class should be created");
 		dialog.setInitialPattern(Signature.getSimpleName(type.getElementName()));
@@ -424,74 +335,6 @@ public class NewImplementationClassWizard extends SimpleWizard {
 	
 	private IPackageFragmentRoot getSourceFolder() {
 		return sourceFolderInput.getSelection();
-	}
-
-	private Collection<IMethod> getSettersFor(IType type, IMethod constructor) {
-		
-		List<IMethod> result = new ArrayList<IMethod>();
-		
-		List<String> parametersFromConstructor = new ArrayList<String>();
-		
-		try {
-			if (constructor != null) {
-				
-				for (String paramName : constructor.getParameterNames()) {
-					parametersFromConstructor.add(paramName.toLowerCase());
-				}
-			}
-		
-			for (IMethod method : type.getMethods()) {
-				
-				String methodName = method.getElementName();
-				
-				if (isVisible(method) && methodName.startsWith("set") && methodName.length() > 3) {
-					
-					if (method.getParameterNames().length == 1) {
-						
-						if (!parametersFromConstructor.contains(methodName.substring(3).toLowerCase())) {
-							result.add(method);
-						}
-						
-					}
-					
-				}
-				
-			}
-		}
-		catch (JavaModelException e) {
-			// syntax error on method -> swallow
-		}
-		
-		
-		return result;
-	}
-
-	private List<IMethod> findConstructorsFor(IType type) {
-		
-		List<IMethod> result = new ArrayList<IMethod>();
-
-		try {
-			for (IMethod method : type.getMethods()) {
-				if (isVisible(method) && (method.isConstructor() || isFactoryMethod(method)) ) {
-					result.add(method);
-				}
-			}
-		}
-		catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		
-		return result;
-	}
-
-	private boolean isFactoryMethod(IMethod method) throws JavaModelException {
-		
-		return (method.getFlags() & Flags.AccStatic) > 0 && 
-			Signature.toString(method.getReturnType()).equals(type.getFullyQualifiedName());
-	}
-
-	private boolean isVisible(IMethod method) throws JavaModelException {
-		return (method.getFlags() & Flags.AccPublic) > 0;
 	}
 
 	

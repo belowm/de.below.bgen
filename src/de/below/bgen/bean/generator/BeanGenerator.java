@@ -45,6 +45,7 @@ public class BeanGenerator {
 
 		InClassStep<JavaCodeWriter> targetType = ClassBuilder.newClass()
 			.visibility(Visibility.PUBLIC)
+			.addInterface(interfaceType.getFullyQualifiedName())
 			.staticClass(!targetTypeGenerator.isMainType())
 			.name(targetTypeName);
 		;

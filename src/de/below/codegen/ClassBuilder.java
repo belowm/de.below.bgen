@@ -1,8 +1,13 @@
 package de.below.codegen;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import de.below.bgen.codegen.Visibility;
 import de.below.codegen.ConstructorBuilder.ConstructorVisibilityStep;
 import de.below.codegen.FieldBuilder.FieldTypeStep;
+import de.below.codegen.JavaCodeWriter.Tokens;
 import de.below.codegen.MethodBuilder.MethodVisibilityStep;
 
 public class ClassBuilder {
@@ -38,6 +43,14 @@ public class ClassBuilder {
 		 *            The class name
 		 */
 		InClassStep<T> name(String string);
+		
+		/**
+		 * Adds an interface to be implemented by the generated class
+		 * 
+		 * @param name
+		 *            The interface name
+		 */
+		ClassNameStep<T> addInterface(String name);
 
 	}
 
@@ -83,6 +96,7 @@ public class ClassBuilder {
 		private final JavaCodeWriter out;
 		private final T parent;
 		private String className;
+		private final Set<String> interfaces = new HashSet<String>();
 
 		public Steps(JavaCodeWriter writer, T parent) {
 			this.out = writer;
@@ -112,6 +126,22 @@ public class ClassBuilder {
 
 			this.className = className;
 			out.writeClassDeclaration(className, visibility, isStatic, isFinal);
+			
+			if (!interfaces.isEmpty()) {
+				out.writeWs("implements");
+			}
+			
+			for (Iterator<String> interfaceName = interfaces.iterator(); interfaceName
+					.hasNext();) {
+				
+				out.write(interfaceName.next());
+				
+				if (interfaceName.hasNext()) {
+					out.writeWs(Tokens.COMMA);
+				}
+				
+			}
+
 			out.startBlock();
 			return this;
 		}
@@ -140,6 +170,12 @@ public class ClassBuilder {
 		@Override
 		public ConstructorVisibilityStep<InClassStep<T>> beginConstructor() {
 			return ConstructorBuilder.<InClassStep<T>>newConstructor(out, this, className);
+		}
+
+		@Override
+		public ClassNameStep<T> addInterface(String name) {
+			interfaces.add(name);
+			return this;
 		}
 
 	}
